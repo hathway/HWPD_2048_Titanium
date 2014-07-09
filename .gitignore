@@ -1,4 +1,6 @@
 .DS_Store
+Resources
+.idea
 build.log
 build
 npm-debug.log

@@ -1,25 +1,28 @@
 ".container": {
-	backgroundColor:"white"
+    backgroundColor:"white"
 },
-"#upBtn": {
-    top: "35pt",
+"#title": {
+    top: "30pt",
+    font: {
+        fontSize: "120pt",
+    },
     width: Ti.UI.SIZE,
 },
-"#downBtn": {
-    top: "125pt",
-    width: Ti.UI.SIZE,
+"#play": {
+    top: "180pt",
+    right: "10%",
+    width: "20%",
 },
-"#leftBtn": {
-    top: "75pt",
-    left: "70pt",
-    width: Ti.UI.SIZE,
+"#user": {
+    width: "60%",
+    left: "10%",
+    top: "180pt",
+    borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+    color: '#336699',
 },
-"#rightBtn": {
-    top: "75pt",
-    right: "70pt",
-    width: Ti.UI.SIZE,
-},
-"#resetBtn": {
-    top: "80pt",
-    width: Ti.UI.SIZE,
+"#highscore": {
+    top: "230pt",
+    font: {
+        fontSize: "18pt",
+    },
 },

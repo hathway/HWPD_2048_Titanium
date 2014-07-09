@@ -1,29 +1,54 @@
-function performMove(func) {
-    func.call(curBoard);
-    if(curBoard.over) {
-        alert('Game over');
-    }
-    curBoard.print();
-    Ti.API.info();
-}
-
-function doClickUp() {performMove(curBoard.up);}
-function doClickDown() {performMove(curBoard.down);}
-function doClickLeft() {performMove(curBoard.left);}
-function doClickRight() {performMove(curBoard.right);}
-function doClickReset() {curBoard.reset();curBoard.addRandom().addLabel();}
-
-$.leftBtn.transform = Ti.UI.create2DMatrix({rotate: -90});
-$.rightBtn.transform = Ti.UI.create2DMatrix({rotate: 90});
-
 $.index.open();
 
+var os = Ti.Platform.osname;
 var Board = require('board');
+var User = require('user');
 
-var curBoard = new Board(4, 4);
-curBoard.parent = $.index;
-curBoard.addRandom().addLabel();
+function backgroundClick() {
+    if(os == "android") {
+        Ti.UI.Android.hideSoftKeyboard();
+    }
+    if(os == "iphone") {
+        $.user.blur();
+    }
+}
 
+function playClick() {
+    if ($.user.value == "") {
+        $.user.backgroundColor = "#f00";
+        var animation = Titanium.UI.createAnimation();
+        animation.backgroundColor = "#fff";
+        animation.duration = 250;
+        $.user.animate(animation);
+    }
+    User.setUsername($.user.value);
+    var playView = Alloy.createController('play').getView();
+    clearInterval(boardInterval);
+    playView.open();
+}
 
-//var tests = require('tests');
-//tests.run();
+function highscoreClick() {}
+
+var bgBoard = new Board(8, 8, $.index);
+var unit = $.index.size.width / (bgBoard.width + 1);
+bgBoard.setPosition(unit, 270, unit);
+bgBoard.time = 25;
+
+function startBoard() {
+    bgBoard.reset();
+    bgBoard.addRandom().addLabel();
+}
+
+var moves = [bgBoard.up, bgBoard.down, bgBoard.left, bgBoard.right];
+function randomMove() {
+    moves[Math.floor(Math.random() * 4)].call(bgBoard);
+}
+
+var boardInterval = setInterval(function(){
+    if (bgBoard.over) {
+        startBoard();
+    }
+    else {
+        randomMove();
+    }
+}, 1000);

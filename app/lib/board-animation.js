@@ -1,8 +1,39 @@
 exports.animateBlockTo = animateBlockTo;
 exports.animateBlockCombine = animateBlockCombine;
 exports.animateAdd = animateAdd;
+exports.animateCallback = animateCallback;
 
-var BLOCK_TIME = 100; // ms to travel one square
+var _animateCallback;
+var _animateTimeout;
+var _animateTimeoutTime = 0;
+
+function animateCallback(callback) {
+    if (_animateTimeout) {
+        clearAnimateTimeout();
+        _animateCallback();
+    }
+    _animateCallback = callback;
+}
+
+function clearAnimateTimeout() {
+    if (_animateTimeout) {
+        clearTimeout(_animateTimeout);
+        _animateTimeout = undefined;
+        _animateTimeoutTime = 0;
+    }
+}
+
+function checkCallback(time) {
+    if (time > _animateTimeoutTime) {
+        _animateTimeoutTime = time;
+        clearAnimateTimeout();
+        setTimeout(function(){
+            if (_animateCallback) {
+                _animateCallback();
+            }
+        }, _animateTimeoutTime);
+    }
+}
 
 function animateBlockTo(block, x, y) {
     if(!block.label) {
@@ -13,7 +44,8 @@ function animateBlockTo(block, x, y) {
     var animation = Titanium.UI.createAnimation();
     animation.top = block.transformY(y);
     animation.left = block.transformX(x);
-    animation.duration = (Math.abs(block.x - x) + Math.abs(block.y - y)) * BLOCK_TIME;
+    animation.duration = (Math.abs(block.x - x) + Math.abs(block.y - y)) * block.board.time;
+    //checkCallback(animation.duration);
     block.label.animate(animation);
 }
 
@@ -26,10 +58,11 @@ function animateBlockCombine(block, otherBlock) {
     var animation = Titanium.UI.createAnimation();
     animation.top = block.transformY(otherBlock.y);
     animation.left = block.transformX(otherBlock.x);
-    animation.duration = (Math.abs(block.x - otherBlock.x) + Math.abs(block.y - otherBlock.y)) * BLOCK_TIME;
+    animation.duration = (Math.abs(block.x - otherBlock.x) + Math.abs(block.y - otherBlock.y)) * block.board.time;
+    //checkCallback(animation.duration);
 
     animation.addEventListener('complete', function(){
-        otherBlock.updateLabel()
+        otherBlock.updateLabel();
         block.board.parent.remove(block.label);
     });
     block.label.animate(animation);
@@ -41,10 +74,8 @@ function animateAdd(block) {
         return
     }
     block.label.opacity = 0;
-    setTimeout(function(){
-        var animation = Titanium.UI.createAnimation();
-        animation.opacity = 1;
-        animation.duration = BLOCK_TIME;
-        block.label.animate(animation);
-    }, BLOCK_TIME * Math.max(block.board.width, block.board.height));
+    var animation = Titanium.UI.createAnimation();
+    animation.opacity = 1;
+    animation.duration = block.board.time;
+    block.label.animate(animation);
 }

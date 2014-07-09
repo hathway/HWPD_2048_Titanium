@@ -1,8 +1,8 @@
-var displayWidth = Ti.Platform.displayCaps.platformWidth;
 var boardAnimation = require('board-animation');
 var animateBlockTo = boardAnimation.animateBlockTo;
 var animateBlockCombine = boardAnimation.animateBlockCombine;
 var animateAdd = boardAnimation.animateAdd;
+var animateCallback = boardAnimation.animateCallback;
 
 function Block(board, x, y, value) {
     this.x = x; this.y = y;
@@ -17,22 +17,25 @@ function Block(board, x, y, value) {
 
 Block.prototype.addLabel = function() {
     this.label = Ti.UI.createLabel({
-        textAlign: 'center'
+        font: {
+            textAlign: 'center'
+        }
     });
     this.board.parent.add(this.label);
     this.updateLabel();
 };
 
 Block.prototype.transformY = function(y) {
-    return 235 + (displayWidth/4) * y + "pt";
-}
+    return this.board.y + (y * this.board.unit) + "pt";
+};
 
 Block.prototype.transformX = function(x) {
-    return 35 + (displayWidth/4) * x + "pt";
-}
+    return this.board.x + (x * this.board.unit) + "pt";
+};
 
 Block.prototype.updateLabel = function() {
     if (this.label != undefined) {
+        this.label.opacity = 1;
         this.label.top = this.transformY(this.y);
         this.label.left = this.transformX(this.x);
         this.label.text = this.value;
@@ -44,7 +47,7 @@ Block.prototype.moveTo = function(pos) {
     // Move this block to that position, and update blocks
     //Ti.API.info('Moving block from: ' + this.x + ', ' + this.y + ' to ' + newX + ', '+ newY);
     this.blocks[this.x][this.y] = null;
-    animateBlockTo(this, newX, newY);
+    //animateBlockTo(this, newX, newY);
     this.x = newX;
     this.y = newY;
     this.blocks[this.x][this.y] = this;
@@ -87,9 +90,20 @@ function Board(w, h, parent) {
     this.blocks = {};
     this.score = 0;
     this.over = false;
+    this.top = 0;
     this.parent = parent;
+    this.unit = 5;
+    this.x = 0;
+    this.y = 0;
+    this.time = 100;
     this.reset();
 }
+
+Board.prototype.setPosition = function(x, y, width) {
+    this.x = x;
+    this.y = y;
+    this.unit = width;
+};
 
 Board.prototype.reset = function() {
     var block;
@@ -114,7 +128,7 @@ Board.prototype.addRandom = function() {
     var choices = [2, 4];
     for(var x = 0; x < this.width; x += 1) {
         for(var y = 0; y < this.height; y += 1) {
-            block = this.blocks[x][y];
+            var block = this.blocks[x][y];
             if(block == null) {
                 empties.push([x, y]);
             }
@@ -169,13 +183,17 @@ Board.prototype.move = function(row, direction) {
     if (madeMove) {
         var block = this.addRandom();
         block.addLabel();
-        animateAdd(block);
+        block.label.opacity = 0;
+        animateCallback(function(){
+            animateAdd(block);
+            console.log('Callback')
+        });
     }
 
     if (!this.canMove()) {
         this.over = true;
     }
-}
+};
 
 Board.prototype.canMove = function() {
     return this.scan(this.TOP_ROW,    this.DOWN,  true) ||
