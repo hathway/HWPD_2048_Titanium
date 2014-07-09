@@ -1,0 +1,25 @@
+".container": {
+	backgroundColor:"white"
+},
+"#upBtn": {
+    top: "35pt",
+    width: Ti.UI.SIZE,
+},
+"#downBtn": {
+    top: "125pt",
+    width: Ti.UI.SIZE,
+},
+"#leftBtn": {
+    top: "75pt",
+    left: "70pt",
+    width: Ti.UI.SIZE,
+},
+"#rightBtn": {
+    top: "75pt",
+    right: "70pt",
+    width: Ti.UI.SIZE,
+},
+"#resetBtn": {
+    top: "80pt",
+    width: Ti.UI.SIZE,
+},

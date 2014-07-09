@@ -1,0 +1,10 @@
+<Alloy>
+	<Window class="container">
+        <Button id="upBtn" onClick="doClickUp" title="Up" />
+        <Button id="downBtn" onClick="doClickDown" title="Down" />
+        <Button id="leftBtn" onClick="doClickLeft" title="Left" />
+        <Button id="rightBtn" onClick="doClickRight" title="Right" />
+        <Button id="resetBtn" onClick="doClickReset" title="Reset" />
+        <ImageView id="boardImg" image="/images/myimage.png" />
+	</Window>
+</Alloy>
