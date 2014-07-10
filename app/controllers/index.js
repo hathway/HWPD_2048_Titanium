@@ -1,14 +1,20 @@
-$.index.open();
-
-var os = Ti.Platform.osname;
 var Board = require('board');
 var User = require('user');
+var Alloy = require('alloy');
+
+if (OS_IOS) {
+    // Setup the navigation
+    var navWindow = Titanium.UI.iOS.createNavigationWindow({
+        window: $.index
+    });
+    navWindow.open();
+}
 
 function backgroundClick() {
-    if(os == "android") {
+    if(OS_ANDROID) {
         Ti.UI.Android.hideSoftKeyboard();
     }
-    if(os == "iphone") {
+    if(OS_IOS) {
         $.user.blur();
     }
 }
@@ -16,15 +22,18 @@ function backgroundClick() {
 function playClick() {
     if ($.user.value == "") {
         $.user.backgroundColor = "#f00";
-        var animation = Titanium.UI.createAnimation();
+        var animation = Ti.UI.createAnimation();
         animation.backgroundColor = "#fff";
         animation.duration = 250;
         $.user.animate(animation);
+        return;
     }
     User.setUsername($.user.value);
-    var playView = Alloy.createController('play').getView();
     clearInterval(boardInterval);
-    playView.open();
+    if (OS_IOS) {
+        navWindow.openWindow(Alloy.createController('play').getView(),
+            {transition:Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT});
+    }
 }
 
 function highscoreClick() {}
@@ -32,7 +41,8 @@ function highscoreClick() {}
 var bgBoard = new Board(8, 8, $.index);
 var unit = $.index.size.width / (bgBoard.width + 1);
 bgBoard.setPosition(unit, 270, unit);
-bgBoard.time = 25;
+bgBoard.time = 50;
+startBoard();
 
 function startBoard() {
     bgBoard.reset();
@@ -51,4 +61,4 @@ var boardInterval = setInterval(function(){
     else {
         randomMove();
     }
-}, 1000);
+}, 250);

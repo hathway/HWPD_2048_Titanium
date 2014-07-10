@@ -17,9 +17,9 @@ $.rightBtn.transform = Ti.UI.create2DMatrix({rotate: 90});
 var Board = require('board');
 
 var curBoard = new Board(4, 4, $.play);
-curBoard.addRandom().addLabel();
 var unit = $.play.size.width / (curBoard.width + 1);
 curBoard.setPosition(unit, 200, unit);
+curBoard.addRandom().addLabel();
 
 //var tests = require('tests');
 //tests.run();

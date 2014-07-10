@@ -45,9 +45,8 @@ Block.prototype.updateLabel = function() {
 Block.prototype.moveTo = function(pos) {
     var newX = pos[0], newY = pos[1];
     // Move this block to that position, and update blocks
-    //Ti.API.info('Moving block from: ' + this.x + ', ' + this.y + ' to ' + newX + ', '+ newY);
     this.blocks[this.x][this.y] = null;
-    //animateBlockTo(this, newX, newY);
+    animateBlockTo(this, newX, newY);
     this.x = newX;
     this.y = newY;
     this.blocks[this.x][this.y] = this;
@@ -184,9 +183,9 @@ Board.prototype.move = function(row, direction) {
         var block = this.addRandom();
         block.addLabel();
         block.label.opacity = 0;
+
         animateCallback(function(){
             animateAdd(block);
-            console.log('Callback')
         });
     }
 
