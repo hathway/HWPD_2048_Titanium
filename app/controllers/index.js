@@ -4,20 +4,24 @@ var Alloy = require('alloy');
 
 if (OS_IOS) {
     // Setup the navigation
+    $.index.navBarHidden = true;
     var navWindow = Titanium.UI.iOS.createNavigationWindow({
         window: $.index
     });
     navWindow.open();
 }
 
-function backgroundClick() {
-    if(OS_ANDROID) {
-        Ti.UI.Android.hideSoftKeyboard();
+$.index.addEventListener('click', function(e){
+    if (e.source != $.user) {
+        // Clicking in the textbox triggers the window click too
+        if(OS_ANDROID) {
+            Ti.UI.Android.hideSoftKeyboard();
+        }
+        if(OS_IOS) {
+            $.user.blur();
+        }
     }
-    if(OS_IOS) {
-        $.user.blur();
-    }
-}
+});
 
 function playClick() {
     if ($.user.value == "") {
@@ -29,9 +33,11 @@ function playClick() {
         return;
     }
     User.setUsername($.user.value);
-    clearInterval(boardInterval);
+    $.index.fireEvent('close');
+    var playView = Alloy.createController('play').getView();
+    playView.index = $.index;
     if (OS_IOS) {
-        navWindow.openWindow(Alloy.createController('play').getView(),
+        navWindow.openWindow(playView,
             {transition:Ti.UI.iPhone.AnimationStyle.FLIP_FROM_LEFT});
     }
 }
@@ -54,11 +60,19 @@ function randomMove() {
     moves[Math.floor(Math.random() * 4)].call(bgBoard);
 }
 
-var boardInterval = setInterval(function(){
-    if (bgBoard.over) {
-        startBoard();
+var boardInterval;
+$.index.addEventListener('open', function() {
+    boardInterval = setInterval(function(){
+        if (bgBoard.over) {
+            startBoard();
+        }
+        else {
+            randomMove();
+        }
+    }, 1000);
+});
+$.index.addEventListener('close', function() {
+    if (boardInterval) {
+        clearInterval(boardInterval);
     }
-    else {
-        randomMove();
-    }
-}, 250);
+});

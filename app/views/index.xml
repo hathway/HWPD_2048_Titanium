@@ -1,5 +1,5 @@
 <Alloy>
-    <Window class="container" onClick="backgroundClick">
+    <Window class="container">
         <Label id="title">2048</Label>
         <TextField id="user" hintText="User"></TextField>
         <Button id="play" title="Play" onClick="playClick"></Button>

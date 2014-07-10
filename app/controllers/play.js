@@ -21,5 +21,9 @@ var unit = $.play.size.width / (curBoard.width + 1);
 curBoard.setPosition(unit, 200, unit);
 curBoard.addRandom().addLabel();
 
+$.play.addEventListener('close', function(){
+    $.play.index.fireEvent('open');
+});
+
 //var tests = require('tests');
 //tests.run();
